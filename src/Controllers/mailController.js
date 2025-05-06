@@ -1,23 +1,23 @@
 import axios from "axios";
 
 export const sendMail = async (req, res) => {
+  console.log(req.body.productName);
+  if (!req.body.productName) {
 
-    if (!req.body.companyName) {
+    const { name, phone, email, message } = req.body;
+    console.log(`Received data: ${JSON.stringify(req.body)}`);
+    if (!name || !phone || !email || !message) {
+      return res.status(400).send('All fields are required');
+    }
 
-        const { name, phone, email, message } = req.body;
-        console.log(`Received data: ${JSON.stringify(req.body)}`);
-        if (!name || !phone || !email || !message) {
-            return res.status(400).send('All fields are required');
-        }
-
-        try {
-            await axios.post(
-                'https://api.brevo.com/v3/smtp/email',
-                {
-                    sender: { name: 'Akdenar Website', email: process.env.SENDER_MAIL },
-                    to: [{ email: process.env.RECEIVER_EMAIL }],
-                    subject: 'Query from akdenar.com',
-                    htmlContent: `
+    try {
+      await axios.post(
+        'https://api.brevo.com/v3/smtp/email',
+        {
+          sender: { name: 'Akdenar Website', email: process.env.SENDER_MAIL },
+          to: [{ email: process.env.RECEIVER_EMAIL }],
+          subject: 'Query from akdenar.com',
+          htmlContent: `
                       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e1e1e1; border-radius: 5px;">
                         <div style="background-color: #f8f9fa; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
                           <h2 style="color: #333; margin-top: 0;">New Website Inquiry</h2>
@@ -37,35 +37,35 @@ export const sendMail = async (req, res) => {
                         </div>
                       </div>
                     `,
-                },
-                {
-                    headers: {
-                        'api-key': process.env.API_KEY,
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
-            res.status(200).send('Email sent successfully');
-        } catch (error) {
-            console.error('Error sending email:', error);
-            res.status(500).send('Error sending email');
+        },
+        {
+          headers: {
+            'api-key': process.env.API_KEY,
+            'Content-Type': 'application/json',
+          },
         }
-    } else {
-        try {
-            const { name, phone, email, message, companyName, productName } = req.body;
-            console.log(`Received data: ${JSON.stringify(req.body)}`);
+      );
+      res.status(200).send('Email sent successfully');
+    } catch (error) {
+      console.error('Error sending email:', error);
+      res.status(500).send('Error sending email');
+    }
+  } else {
+    try {
+      const { name, phone, email, message, companyName, productName } = req.body;
+      console.log(`Received data: ${JSON.stringify(req.body)}`);
 
-            if (!name || !phone || !email || !message || !companyName || !productName) {
-                return res.status(400).send('All fields are required');
-            }
+      if (!name || !phone || !email || !message || !productName) {
+        return res.status(400).send('All fields are required');
+      }
 
-            await axios.post(
-                'https://api.brevo.com/v3/smtp/email',
-                {
-                    sender: { name: 'Akdenar Website', email: process.env.SENDER_MAIL },
-                    to: [{ email: process.env.RECEIVER_EMAIL }],
-                    subject: 'Query from akdenar.com',
-                    htmlContent: `
+      await axios.post(
+        'https://api.brevo.com/v3/smtp/email',
+        {
+          sender: { name: 'Akdenar Website', email: process.env.SENDER_MAIL },
+          to: [{ email: process.env.RECEIVER_EMAIL }],
+          subject: 'Query from akdenar.com',
+          htmlContent: `
                       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e1e1e1; border-radius: 5px;">
                         <div style="background-color: #f8f9fa; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
                           <h2 style="color: #333; margin-top: 0;">New Website Inquiry</h2>
@@ -77,7 +77,7 @@ export const sendMail = async (req, res) => {
                           <p><strong style="color: #555;">Name:</strong> ${name}</p>
                           <p><strong style="color: #555;">Phone:</strong> ${phone}</p>
                           <p><strong style="color: #555;">Email:</strong> ${email}</p>
-                          <p><strong style="color: #555;">Company Name:</strong> ${companyName}</p>
+                          ${companyName ? `<p><strong style="color: #555;">Company Name:</strong> ${companyName}</p>` : ''}
                           <p><strong style="color: #555;">Product Name:</strong> ${productName}</p>
                         </div>
                         
@@ -87,18 +87,18 @@ export const sendMail = async (req, res) => {
                         </div>
                       </div>
                     `,
-                },
-                {
-                    headers: {
-                        'api-key': process.env.API_KEY,
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
-            res.status(200).send('Email sent successfully');
-        } catch (error) {
-            console.error('Error sending email:', error);
-            res.status(500).send('Error sending email');
+        },
+        {
+          headers: {
+            'api-key': process.env.API_KEY,
+            'Content-Type': 'application/json',
+          },
         }
+      );
+      res.status(200).send('Email sent successfully');
+    } catch (error) {
+      console.error('Error sending email:', error);
+      res.status(500).send('Error sending email');
     }
+  }
 }

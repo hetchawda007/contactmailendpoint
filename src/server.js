@@ -31,7 +31,7 @@ app.options('*', cors(corsOptions)); // Handle preflight requests globally
 app.use(bodyParser.json());
 const port = process.env.PORT;
 
-app.use('/api/v1', authmiddleware.authenticateApiKey, mail);
+app.use('/api/v1', mail);
 
 app.get('/', (req, res) => {
     res.send('Server is running...');
